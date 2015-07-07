@@ -35,7 +35,6 @@ public class FacebookClient implements FaceGlobal {
 				link_user = link_user + (is_ID?"profile.php?id=" : "") + who_what + (is_ID ? "%2Fabout&sk=about&section=contact-info&pnref=about" : "/about?section=contact-info&pnref=about" );
 			}
 			User new_user = new User();
-			System.out.println(link_user);
 			new_user.construct(facecraper, link_user, who_what);
 			return (T) new_user;
 		}else{

@@ -14,7 +14,7 @@ public class app
     
     User me = fb.getObject("me", User.class);
     
-    System.out.println(me);
+    System.out.println(me.getBirthday());
     
     fb.end();
   }

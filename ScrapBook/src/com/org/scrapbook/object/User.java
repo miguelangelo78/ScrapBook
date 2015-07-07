@@ -8,9 +8,60 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class User implements FaceGlobal {
+	public boolean isPrivate() {
+		return isPrivate;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public String getBirthday() {
+		return birthday;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public String getPictureURL() {
+		return pictureURL;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public String getRelationshipStatus(){
+		return relationshipStatus;
+	}
+	
 	private boolean isPrivate = true;
 	private String firstName; // DONE
 	private String lastName; // DONE
@@ -26,6 +77,7 @@ public class User implements FaceGlobal {
 	private String location; // another page
 	private String relationshipStatus; // pending (another page)
 	
+	/*
 	// Irrelevant:
 	private String employer;
 	private String position;
@@ -38,8 +90,6 @@ public class User implements FaceGlobal {
 	private String SO;
 	private String bio;	// NO
 	private String quotes;	// NO
-	private String about;	// NO
-	private String rawUpdatedTime;
 	private List<String> interestedIn = new ArrayList();
 	private List<String> meetingFor = new ArrayList();
 	private List<String> work = new ArrayList();
@@ -48,6 +98,7 @@ public class User implements FaceGlobal {
 	private List<String> favoriteAthletes = new ArrayList();
 	private List<String> languages = new ArrayList();
 	private boolean verified;
+  */
   
 	public void construct(WebScraper scraper, String user_page_url, String username) {
 		scraper.scrape("https://www.facebook.com/login.php?login_attempt=1", user_page_url, null, T_ME_ID_USR);
@@ -107,7 +158,9 @@ public class User implements FaceGlobal {
 	  out = out + "gender: " + gender + ", ";
 	  out = out + "email: " + email + ", ";
 	  out = out + "pictureURL: " + pictureURL + ", ";
-	    
+	  out = out + "relationship: " + relationshipStatus + ", ";
+	  out = out + "location: " + location;
+	  
 	  return out + "]";
   }
 }
