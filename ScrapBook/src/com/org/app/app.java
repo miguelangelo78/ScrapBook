@@ -2,9 +2,6 @@ package com.org.app;
 
 import com.org.scrapbook.client.FacebookClient;
 import com.org.scrapbook.object.User;
-import com.org.uniscraper.misc.Util;
-
-import java.io.PrintStream;
 
 public class app
 {
