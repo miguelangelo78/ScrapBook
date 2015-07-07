@@ -3,7 +3,7 @@ ScrapBook is a library for scraping Facebook. It is meant to be used as a normal
 
 It uses my library 'Universal Web Scraper', including all of the libraries inside it. (https://github.com/miguelangelo78/Universal-Web-Scraper)
 
-Example of how it will work:
+Example of how it works:
 
 ``` Java
 FacebookClient fb = new FacebookClient(); // A new Firefox window will appear for you to login to your Facebook account
