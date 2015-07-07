@@ -75,7 +75,7 @@ public class JSONIterator{
 		for(Object obj: arr){
 			if(add_slashes){
 				obj = ((Element)obj).toString().replaceAll("(?<!\\\\)\"", "\\\"");
-				obj = ((String) obj).replaceAll("\n",""); // Remove new lines
+				//obj = ((String) obj).replaceAll("\n",""); // Remove new lines
 			}
 			
 			strbuild+="\""+obj+ ((last++ < arr.length-1) ? "\", ":"\"");

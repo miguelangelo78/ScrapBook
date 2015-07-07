@@ -1,8 +1,11 @@
 package com.org.uniscraper.misc;
 
 import com.org.uniscraper.jsoniterator.JSONIterator;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.json.simple.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -84,8 +87,13 @@ public class Util
     return true;
   }
   
+  public static boolean containsInt(String str){
+	  return str.matches(".*\\d+.*");
+  }
+  
   public static WebElement select(WebDriver client, String cssSelector)
   {
     return client.findElement(By.cssSelector(cssSelector));
   }
+ 
 }
