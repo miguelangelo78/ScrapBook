@@ -1,5 +1,6 @@
 package com.org.scrapbook.client;
 
+import com.org.cache.JCache;
 import com.org.scrapbook.global.FaceGlobal;
 import com.org.scrapbook.object.User;
 import com.org.uniscraper.misc.Util;
@@ -71,6 +72,12 @@ public class FacebookClient implements FaceGlobal {
 	}
   
 	private void getMyUsername() {
+		// Use cache to load my username:
+		if(JCache.isInCache(JCache.cache_auth_name, "me")){
+			myID = (String) JCache.get(JCache.cache_auth_name, "me");
+			return;
+		}
+		
 		facecraper.scrape(L_LOGIN, L_HOME, null, "{'my_username': '._2dpe' }");
 	  
 		Matcher match = Pattern.compile("\\/.+?\\/(.+?)$").matcher(facecraper.elem("my_username", 0).attr("href"));
@@ -78,6 +85,8 @@ public class FacebookClient implements FaceGlobal {
 			myID = match.group(1);
 		
 		// If the username doesn't exist prepend : "profile.php?id="
+		
+		JCache.put(JCache.cache_auth_name, "me", myID);
 	}
 	
 	// Friends functions:

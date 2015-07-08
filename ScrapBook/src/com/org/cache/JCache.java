@@ -36,6 +36,5 @@ public class JCache {
 	  public static void initCache(){
 	  	cacheman = CacheManager.getInstance();
 	  }
-	  
-	  
+	  	  
 }
