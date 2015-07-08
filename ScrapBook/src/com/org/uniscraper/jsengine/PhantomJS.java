@@ -135,10 +135,10 @@ public class PhantomJS
       manual_auth_driver.get(url_base);
       
       WebElement email = Util.select(manual_auth_driver, "input[name=email]");
-      email.sendKeys("santosmiguel25@gmail.com");
+      email.sendKeys("youremail");
       
       WebElement pass = Util.select(manual_auth_driver, "input[name=pass]");
-      pass.sendKeys("nico21");
+      pass.sendKeys("yourpassword");
       pass.sendKeys(Keys.ENTER);
       
       cookies = manual_auth_driver.manage().getCookies();
