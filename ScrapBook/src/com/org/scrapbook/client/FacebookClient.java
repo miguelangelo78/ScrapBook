@@ -5,6 +5,7 @@ import com.org.scrapbook.object.User;
 import com.org.uniscraper.misc.Util;
 import com.org.uniscraper.scraper.WebScraper;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,22 +26,36 @@ public class FacebookClient implements FaceGlobal {
     
 		String who_what = content_split[0];
 		
+		// Grab user/page:
+		String link_user = L_HOME;
+		
+		boolean is_ID = Util.isNumeric(who_what);
+		if (who_what.toLowerCase().equals("me")) 
+			link_user += myID;
+		else
+			link_user += (is_ID?"profile.php?id=" : "") + who_what;
+		
 		if (content_split.length == 1) {
-			String link_user = L_HOME;
-			
-			if (who_what.toLowerCase().equals("me")) 
-				link_user = link_user + myID;
-			else{
-				boolean is_ID = Util.isNumeric(who_what);
-				link_user = link_user + (is_ID?"profile.php?id=" : "") + who_what + (is_ID ? "%2Fabout&sk=about&section=contact-info&pnref=about" : "/about?section=contact-info&pnref=about" );
-			}
 			User new_user = new User();
-			new_user.construct(facecraper, link_user, who_what);
+			new_user.construct(facecraper, link_user + (is_ID?"%2Fabout&sk=about&section=contact-info&pnref=about" : "/about?section=contact-info&pnref=about"), who_what);
 			return (T) new_user;
 		}else{
-			
+			switch(content_split[1].toLowerCase()){
+				case S_FRIENDS:
+					int start = 0;
+					int length = -1;
+					try{ start = (int) params[0]; } catch(Exception e){}
+					try{ length = (int) params[1]; } catch(Exception e){}
+					return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length);
+				case S_FEED: break;
+				case S_HOME: break;
+				case S_PAGE: break;
+				case S_PUBLISH: break;
+				case S_SEARCH: break;
+				case S_UNPUBLISH: break;
+			}
 		}
-    return null;
+		return null;
   }
   
   	public void publish(String content, Object parameters) {}
@@ -56,8 +71,19 @@ public class FacebookClient implements FaceGlobal {
 	  
 		Matcher match = Pattern.compile("\\/.+?\\/(.+?)$").matcher(facecraper.elem("my_username", 0).attr("href"));
 		if (match.find()) 
-			myID = match.group(1)+"/about?section=contact-info&pnref=about";
+			myID = match.group(1);
 		
 		// If the username doesn't exist prepend : "profile.php?id="
+	}
+	
+	// Friends functions:
+	public ArrayList<User> updateAllFriends(ArrayList<User> friendsList){
+		for(int i=0;i<friendsList.size();i++)
+			friendsList.set(i, getObject(friendsList.get(i).getUsername(), User.class));
+		return friendsList;
+	}
+	
+	public User updateFriend(User friend){
+		return (friend = getObject(friend.getUsername(), User.class));
 	}
 }

@@ -95,5 +95,14 @@ public class Util
   {
     return client.findElement(By.cssSelector(cssSelector));
   }
+  
+  public static int extractInt(String str){
+	  int n = -1;
+	  try{
+		  n = Integer.parseInt(str.replaceAll("\\D", ""));
+	  }catch(Exception e){}
+	  
+	  return n;
+  }
  
 }
