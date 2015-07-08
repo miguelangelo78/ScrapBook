@@ -46,7 +46,11 @@ public class FacebookClient implements FaceGlobal {
 					int length = -1;
 					try{ start = (int) params[0]; } catch(Exception e){}
 					try{ length = (int) params[1]; } catch(Exception e){}
-					return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length);
+					
+					if(content_split.length==3){
+						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length).get(Integer.parseInt(content_split[2]));
+					}else
+						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length);
 				case S_FEED: break;
 				case S_HOME: break;
 				case S_PAGE: break;
