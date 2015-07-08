@@ -1,5 +1,6 @@
 package com.org.uniscraper.jsengine;
 
+import com.org.cache.JCache;
 import com.org.uniscraper.misc.Util;
 
 import java.io.File;
@@ -9,11 +10,8 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -34,10 +32,7 @@ public class PhantomJS
   private final int CLIENT_WIDTH = 1920;
   private final int CLIENT_HEIGHT = 1080;
   private final String PHANTOM_EXECUTABLE = "lib/phantomjs/phantomjs.exe";
-  private Cache cache;
-  private CacheManager cacheman;
-  private String cache_cookiename = "facebook_auth_cookies";
-  private String cache_name = "facebook_auth_cache";
+
   boolean cookies_loaded_from_cache = false;
   
   public WebDriver getClient()
@@ -134,7 +129,7 @@ public class PhantomJS
     this.client.close();
     this.client.quit();
     plz_killme();
-    cacheman.shutdown();
+    JCache.cacheman.shutdown();
   }
   
   private void plz_killme(){
@@ -147,18 +142,12 @@ public class PhantomJS
 	}
   }
   
-  public void save_cookies_to_cache(Set<Cookie> cookies){
-	  cache.put(new Element(cache_cookiename, cookies));
-  }
-  
-  @SuppressWarnings("unchecked")
-  public Set<Cookie> load_cookies_from_cache(){
-	  return (Set<Cookie>) cache.get(cache_cookiename).getObjectValue();
-  }
-  
-  private void initCache(){
-  	cacheman = CacheManager.getInstance();
-  	cache = cacheman.getCache(cache_name);
+  private void show_login_message(){
+	  JOptionPane msg = new JOptionPane();
+	  msg.setMessage("Press the OK button after you've logged in on Facebook");
+	  JDialog diag = msg.createDialog("Facebook Login");
+	  diag.setAlwaysOnTop(true);
+	  diag.setVisible(true);
   }
   
   public Map<String, String> auth(EngineAuthCallback callback, String url_base, boolean manual)
@@ -167,10 +156,10 @@ public class PhantomJS
     if (manual)
     {
     	// load cookies from cache here
-    	initCache();
+    	JCache.initCache();
     	try{
-	    	if(cache.isKeyInCache(cache_cookiename)){
-	    		cookies = load_cookies_from_cache();
+    		if(JCache.isInCache(JCache.cache_auth_name, JCache.cache_cookiename)){
+	    		cookies = JCache.load_cookies_from_cache();
 	    		cookies_loaded_from_cache = true;
 	    	}
     	}catch(Exception e){}
@@ -180,12 +169,12 @@ public class PhantomJS
     		
     		manual_auth_driver.get(url_base);
 	      
-	    	JOptionPane.showMessageDialog(null, "Press the OK button after you've logged in on Facebook");
-	    	
+    		show_login_message();
+    		
 	    	cookies = manual_auth_driver.manage().getCookies();
 	    	
 	    	// Save cookies on cache here
-	    	save_cookies_to_cache(cookies);
+	    	JCache.save_cookies_to_cache(cookies);
 	    	manual_auth_driver.close();
     	}
     }
