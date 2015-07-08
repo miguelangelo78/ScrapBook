@@ -19,6 +19,8 @@ public abstract interface FaceGlobal
   public static String S_SEARCH = "search";
   public static String S_PUBLISH = "publish";
   public static String S_UNPUBLISH = "unpublish";
+  public static String S_ADD = "add";
+  public static String S_REMOVE = "remove";
   
   public static int MAX_FRIENDS = 40;
 }

@@ -181,7 +181,10 @@ public class User implements FaceGlobal {
 		url = user_page_url.replaceAll("about\\?.+$", "");
 		
 		// Birthday:
-		birthday = ((Element)scraper.elem("personal", 0).select("._50f4").get(1)).text();
+		try{
+			birthday = ((Element)scraper.elem("personal", 0).select("._50f4").get(1)).text();
+		}catch(Exception e){}
+		
 		try {
 			gender = scraper.elem("personal", 1).select("._50f4").get(1).text();
 		
@@ -189,10 +192,12 @@ public class User implements FaceGlobal {
 				gender = null;
 		} catch (Exception e) {
 			// Fix bug (gender being on birthday's field)
-			gender = scraper.elem("personal", 0).select("._50f4").get(1).text();
-			if(gender!=null)
-				if(Util.containsInt(gender)) gender = null;
-				else birthday = null;
+			try{
+				gender = scraper.elem("personal", 0).select("._50f4").get(1).text();
+				if(gender!=null)
+					if(Util.containsInt(gender)) gender = null;
+					else birthday = null;
+			}catch(Exception e2){}
 		}
 		
 		// Email:
@@ -237,11 +242,13 @@ public class User implements FaceGlobal {
 	
 	public static ArrayList<User> constructFriends(WebScraper scraper, String user_page_url, String username, int start, int length){
 		ArrayList<User> friends = new ArrayList<User>();
+		
+		// put a get callback here:
 		scraper.scrape(L_LOGIN, user_page_url, null, T_FRIENDS); // Use the start variable here to affect what it is scraping
 		
-		int limit = (length<=0)? MAX_FRIENDS : length;
+		int limit = (length<=0)? MAX_FRIENDS : start+length;
 		
-		for(int i=0;i<limit;i++){
+		for(int i=start;i<limit;i++){
 			try{
 				User friend = new User();
 				Element friend_element = scraper.elem("friends",i);
@@ -270,6 +277,7 @@ public class User implements FaceGlobal {
 				friend.setUsername(friend.getId());
 				
 				friends.add(friend);
+				
 			}catch(Exception e){break;}
 		}
 		

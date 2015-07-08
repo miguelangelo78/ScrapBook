@@ -21,10 +21,10 @@ public class FacebookClient implements FaceGlobal {
 	 }
   
 	@SuppressWarnings("unchecked")
-	public <T> T getObject(String objectName, Class<T> classtype, Object... params) {
-		String[] content_split = objectName.split("/");
+	public <T> T get(String path, Class<T> classtype, Object... params) {
+		String[] path_split = path.split("/");
     
-		String who_what = content_split[0];
+		String who_what = path_split[0];
 		
 		// Grab user/page:
 		String link_user = L_HOME;
@@ -35,21 +35,21 @@ public class FacebookClient implements FaceGlobal {
 		else
 			link_user += (is_ID?"profile.php?id=" : "") + who_what;
 		
-		if (content_split.length == 1) {
+		if (path_split.length == 1) {
 			User new_user = new User();
 			new_user.construct(facecraper, link_user + (is_ID?"%2Fabout&sk=about&section=contact-info&pnref=about" : "/about?section=contact-info&pnref=about"), who_what);
 			return (T) new_user;
 		}else{
-			switch(content_split[1].toLowerCase()){
+			switch(path_split[1].toLowerCase()){
 				case S_FRIENDS:
 					int start = 0;
 					int length = -1;
 					try{ start = (int) params[0]; } catch(Exception e){}
 					try{ length = (int) params[1]; } catch(Exception e){}
 					
-					if(content_split.length==3){
-						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length).get(Integer.parseInt(content_split[2]));
-					}else
+					if(path_split.length==3)
+						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, Integer.parseInt(path_split[2]), 1).get(0);
+					else
 						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length);
 				case S_FEED: break;
 				case S_HOME: break;
@@ -83,11 +83,11 @@ public class FacebookClient implements FaceGlobal {
 	// Friends functions:
 	public ArrayList<User> updateAllFriends(ArrayList<User> friendsList){
 		for(int i=0;i<friendsList.size();i++)
-			friendsList.set(i, getObject(friendsList.get(i).getUsername(), User.class));
+			friendsList.set(i, get(friendsList.get(i).getUsername(), User.class));
 		return friendsList;
 	}
 	
 	public User updateFriend(User friend){
-		return (friend = getObject(friend.getUsername(), User.class));
+		return (friend = get(friend.getUsername(), User.class));
 	}
 }
