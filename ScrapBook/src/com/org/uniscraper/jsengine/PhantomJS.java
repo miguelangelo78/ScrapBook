@@ -38,6 +38,7 @@ public class PhantomJS
   private CacheManager cacheman;
   private String cache_cookiename = "facebook_auth_cookies";
   private String cache_name = "facebook_auth_cache";
+  boolean cookies_loaded_from_cache = false;
   
   public WebDriver getClient()
   {
@@ -167,9 +168,14 @@ public class PhantomJS
     {
     	// load cookies from cache here
     	initCache();
-    	if(cache.isKeyInCache(cache_cookiename))
-    		cookies = load_cookies_from_cache();
-    	else{
+    	try{
+	    	if(cache.isKeyInCache(cache_cookiename)){
+	    		cookies = load_cookies_from_cache();
+	    		cookies_loaded_from_cache = true;
+	    	}
+    	}catch(Exception e){}
+    	
+    	if(!cookies_loaded_from_cache){
     		WebDriver manual_auth_driver = new FirefoxDriver();
     		
     		manual_auth_driver.get(url_base);

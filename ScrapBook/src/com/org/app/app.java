@@ -10,7 +10,7 @@ public class app {
 		
 	FacebookClient fb = new FacebookClient();
 	
-	int path [] = new int[]{2,11};
+	int path [] = new int[]{2,11,10,1};
 	
 	long startTime = System.currentTimeMillis();
 	
