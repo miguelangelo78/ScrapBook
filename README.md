@@ -116,5 +116,5 @@ for(Element entry: homefeed)
 
 ``` 
 
-NOTE: Since this library doesn't use Facebook's API, it must use a headless browser for scraping the data. It could use JSoup but Facebook is mostly made out of Javascript code and I needed a headless browser to execute it. Because of this, it might take some time to fetch a single user. This means this library would be ideal for a bot to continuously crawl Facebook as time goes on, and not to fetch 100 users extremely fast in less than 30 seconds.
+**Note:** Since this library doesn't use Facebook's API, it must use a headless browser for scraping the data. It could use JSoup but Facebook is mostly made out of Javascript code and I needed a headless browser to execute it. Because of this, it might take some time to fetch a single user. This means this library would be ideal for a bot to continuously crawl Facebook as time goes on, and not to fetch 100 users extremely fast in less than 30 seconds.
 
