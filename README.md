@@ -68,7 +68,7 @@ System.out.print(feed_text);
 Or grab a friend's feed! (or even a friend's friend feed)
 ``` Java
 // Grab most recent feeds:
-Elements feeds = fb.get("lucas.192/feed", Elements.class);
+Elements feeds = fb.get("lucas.192/feed", Elements.class); // Yes, you can put anyone's ID/username there and it'll fetch the user for you!
 			
 // Fetch 3rd entry:
 String feed_html = feeds.get(2).html();
