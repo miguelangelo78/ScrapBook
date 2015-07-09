@@ -302,63 +302,71 @@ public class User implements FaceGlobal {
 		cache_user(cache_usr_name);
 	}
 	
-	
-	public static ArrayList<User> load_friendlist_from_cache(String cache_usr_name){
+	public static ArrayList<User> load_friendlist_from_cache(String cache_usr_name, int start, int end){
 		ArrayList<User> friends = new ArrayList<User>();
 		
-		int howManyFriends= (int) JCache.get(cacheFriends, cache_usr_name+"_friends_count");
-		for(int i=0;i<howManyFriends;i++){
-			User tmpFriend = new User();
-			tmpFriend.setFullName((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_fullName"));
-			tmpFriend.setFirstName((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_firstName"));
-			tmpFriend.setLastName((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_lastName"));
-			tmpFriend.setUrl((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_url"));
-			tmpFriend.setFriendCount((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_friendCount"));
-			tmpFriend.setPictureURL((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_pictureURL"));
-			tmpFriend.setId((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_id"));
-			tmpFriend.setUsername((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_username"));
-			
-			// All set, add this user:
-			friends.add(tmpFriend);
-		}
-		return friends;
+		// Load all friends:
+		try{
+			for(int i=start;i<end;i++){
+				User tmpFriend = new User();
+				String fullNameTmp = (String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_fullName");
+				if(fullNameTmp==null) continue;
+				
+				tmpFriend.setFullName(fullNameTmp);
+				tmpFriend.setFirstName((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_firstName"));
+				tmpFriend.setLastName((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_lastName"));
+				tmpFriend.setUrl((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_url"));
+				tmpFriend.setFriendCount((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_friendCount"));
+				tmpFriend.setPictureURL((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_pictureURL"));
+				tmpFriend.setId((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_id"));
+				tmpFriend.setUsername((String) JCache.get(cacheFriends, cache_usr_name+"_friend_"+i+"_username"));
+				
+				// All set, add this user:
+				friends.add(tmpFriend);
+			}	
+		}catch(Exception e){return null;}
+		
+		if(friends.size()==0) return null;
+		else return friends;
 	}
 	
-	public static void cache_friendlist(String cache_usr_name, ArrayList<User> friends){
+	public static void cache_friendlist(String cache_usr_name, ArrayList<User> friends, int start, int end){
 		JCache.put(cacheFriends, cache_usr_name, "alive");
 		
-		int friendlist_size = friends.size();
-		JCache.put(cacheFriends, cache_usr_name+"_friends_count", friendlist_size);
-		
-		for(int i=0;i<friendlist_size;i++){
-			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_fullName", friends.get(i).getFullName());
-			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_firstName", friends.get(i).getFirstName());
-			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_lastName", friends.get(i).getLastName());
-			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_url", friends.get(i).getUrl());
-			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_friendCount", friends.get(i).getFriendCount());
-			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_pictureURL", friends.get(i).getPictureURL());
-			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_id", friends.get(i).getId());
-			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_username", friends.get(i).getUsername());
+		for(int i=start,fr_ctr = 0;i<end;i++,fr_ctr++){
+			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_fullName", friends.get(fr_ctr).getFullName());
+			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_firstName", friends.get(fr_ctr).getFirstName());
+			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_lastName", friends.get(fr_ctr).getLastName());
+			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_url", friends.get(fr_ctr).getUrl());
+			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_friendCount", friends.get(fr_ctr).getFriendCount());
+			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_pictureURL", friends.get(fr_ctr).getPictureURL());
+			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_id", friends.get(fr_ctr).getId());
+			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_username", friends.get(fr_ctr).getUsername());
 		}
 	}
 	
 	public static ArrayList<User> constructFriends(WebScraper scraper, String user_page_url, String username, int start, int length){
-		ArrayList<User> friends;
+		ArrayList<User> friends = null;
+		
+		int limit = (length<=0)? MAX_FRIENDS : start+length;
 		
 		// Check if user lives in cache
 		String cache_usr_name = cacheUserPrefix+username;
-		if(JCache.isInCache(cacheFriends, cache_usr_name)) 
+		boolean construct = true;
+				
+		if(JCache.isInCache(cacheFriends, cache_usr_name)){
 			// He is, load all data necessary for this friend's friendlist:
-			return load_friendlist_from_cache(cache_usr_name);
-		else
-			friends = new ArrayList<User>();
-			
+			friends = load_friendlist_from_cache(cache_usr_name, start, limit);
+			if(friends!=null) construct = false;
+		}
+		
+		if(!construct) return friends;
+		
+		friends = new ArrayList<User>();
 		// He's not in the cache, scrape his friend list:
 		
 		// put a get callback here:
 		scraper.scrape(L_LOGIN, user_page_url, null, T_FRIENDS); // Use the start variable here to affect what it is scraping
-		
-		int limit = (length<=0)? MAX_FRIENDS : start+length;
 		
 		for(int i=start;i<limit;i++){
 			try{
@@ -394,7 +402,8 @@ public class User implements FaceGlobal {
 		}
 
 		// Add this list of friends to the cache!
-		cache_friendlist(cache_usr_name, friends);
+		if(friends.size()!=0)
+			cache_friendlist(cache_usr_name, friends, start, limit);
 		return friends;
 	}
   

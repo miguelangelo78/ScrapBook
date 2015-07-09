@@ -31,8 +31,10 @@ public class FacebookClient implements FaceGlobal {
 		String link_user = L_HOME;
 		
 		boolean is_ID = Util.isNumeric(who_what);
-		if (who_what.toLowerCase().equals("me")) 
+		if (who_what.toLowerCase().equals("me")) {
 			link_user += myID;
+			who_what = myID;
+		}
 		else
 			link_user += (is_ID?"profile.php?id=" : "") + who_what;
 		
@@ -48,8 +50,11 @@ public class FacebookClient implements FaceGlobal {
 					try{ start = (int) params[0]; } catch(Exception e){}
 					try{ length = (int) params[1]; } catch(Exception e){}
 					
-					if(path_split.length==3)
-						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, Integer.parseInt(path_split[2]), 1).get(0);
+					if(path_split.length==3){
+						try{
+							return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, Integer.parseInt(path_split[2]), 1).get(0);
+						}catch(Exception e){System.err.println("The friend number "+path_split[2]+" does not exist"); return null;}
+					}
 					else
 						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length);
 				case S_FEED: break;
@@ -85,7 +90,7 @@ public class FacebookClient implements FaceGlobal {
 			myID = match.group(1);
 		
 		// If the username doesn't exist prepend : "profile.php?id="
-		
+		System.out.println(myID);
 		JCache.put(JCache.cache_auth_name, "me", myID);
 	}
 	
