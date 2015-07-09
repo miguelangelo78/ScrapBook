@@ -239,6 +239,10 @@ public class WebScraper
     return ((Element)((Object[])this.data.get(target))[index]).toString();
   }
   
+  public int count(String target){
+	  return ((Object[])data.get(target)).length;
+  }
+  
   public Element elem(String target, int index)
   {
     return (Element)((Object[])this.data.get(target))[index];

@@ -53,7 +53,7 @@ public class FacebookClient implements FaceGlobal {
 					if(path_split.length==3){
 						try{
 							return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, Integer.parseInt(path_split[2]), 1).get(0);
-						}catch(Exception e){System.err.println("The friend number "+path_split[2]+" does not exist"); return null;}
+						}catch(Exception e){return null;}
 					}
 					else
 						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length);

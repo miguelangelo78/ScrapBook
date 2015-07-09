@@ -368,6 +368,12 @@ public class User implements FaceGlobal {
 		// put a get callback here:
 		scraper.scrape(L_LOGIN, user_page_url, null, T_FRIENDS); // Use the start variable here to affect what it is scraping
 		
+		int how_manyfriends_found = scraper.count("friends");
+		if(start >= how_manyfriends_found && how_manyfriends_found>0){
+			start = how_manyfriends_found-1;
+			limit=start+1;
+		}
+		
 		for(int i=start;i<limit;i++){
 			try{
 				User friend = new User();
@@ -398,7 +404,7 @@ public class User implements FaceGlobal {
 				
 				friends.add(friend);
 				
-			}catch(Exception e){break;}
+			}catch(Exception e){e.printStackTrace(); break;}
 		}
 
 		// Add this list of friends to the cache!
