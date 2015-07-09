@@ -51,7 +51,7 @@ fb.end(); // Finish it
 
 Grab any friend from any person:
 ``` Java
-User someoneUnknown = fb.get("lucas.example123/friends/5, User.class); // Grab the 6th friend from lucas
+User someoneUnknown = fb.get("lucas.example123/friends/5", User.class); // Grab the 6th friend from lucas
 
 System.out.println("Name: " + someoneUnknown.getFullName());
 System.out.println("Lives in: " + someoneUnknown.getLocation());
@@ -91,7 +91,7 @@ System.out.print(feed_text);
 Or grab a friend's feed! (or even a friend's friend feed)
 ``` Java
 // Grab most recent feeds:
-Elements feeds = fb.get("lucas.192/feed", Elements.class); // Yes, you can put anyone's ID/username there and it'll fetch the user for you!
+Elements feeds = fb.get("lucas.192/feed", Elements.class);
 			
 // Fetch 3rd entry:
 String feed_html = feeds.get(2).html();
