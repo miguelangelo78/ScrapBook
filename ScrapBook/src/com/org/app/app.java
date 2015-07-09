@@ -1,10 +1,10 @@
 package com.org.app;
 
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.org.cache.JCache;
 import com.org.scrapbook.client.FacebookClient;
-import com.org.scrapbook.object.User;
 
 public class app {
 
@@ -25,10 +25,12 @@ public class app {
 			cron(); 
 			/////
 			
-			Elements feeds = fb.get("me/home", Elements.class);
-			
-			System.out.println(feeds.size());
-			System.out.print(feeds.get(0).text());
+			// Fetch most recent entries:
+			Elements homefeed = fb.get("me/home", Elements.class);
+
+			// Simple as this:
+			for(Element entry: homefeed)
+				System.out.println(entry.text());
 			
 			/////
 			float elapsedTime = cron()*1.0f/1000; 
