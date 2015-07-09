@@ -362,8 +362,8 @@ public class User implements FaceGlobal {
 		
 		if(!construct) return friends;
 		
-		friends = new ArrayList<User>();
 		// He's not in the cache, scrape his friend list:
+		friends = new ArrayList<User>();
 		
 		// put a get callback here:
 		scraper.scrape(L_LOGIN, user_page_url, null, T_FRIENDS); // Use the start variable here to affect what it is scraping
@@ -404,7 +404,7 @@ public class User implements FaceGlobal {
 				
 				friends.add(friend);
 				
-			}catch(Exception e){e.printStackTrace(); break;}
+			}catch(Exception e){System.err.println("("+user_page_url+") > Found "+how_manyfriends_found+" friends"); e.printStackTrace(); break;}
 		}
 
 		// Add this list of friends to the cache!

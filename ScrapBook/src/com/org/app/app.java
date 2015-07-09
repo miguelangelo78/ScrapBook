@@ -19,7 +19,7 @@ public class app {
 		FacebookClient fb = new FacebookClient();
 		
 		try{
-			int path [] = new int[]{7,1,0,29,1};
+			int path [] = new int[]{7,1,0,29,1,5,0,9,18};
 			
 			cron(); 
 			/////

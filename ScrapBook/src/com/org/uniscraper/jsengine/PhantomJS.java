@@ -18,12 +18,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class PhantomJS
 {
@@ -93,6 +96,17 @@ public class PhantomJS
     setProperties();
   }
   
+  void waitForLoad(WebDriver driver) {
+	    ExpectedCondition<Boolean> pageLoadCondition = new
+	        ExpectedCondition<Boolean>() {
+	            public Boolean apply(WebDriver driver) {
+	                return ((JavascriptExecutor)driver).executeScript("return document.readyState").equals("complete");
+	            }
+	        };
+	    WebDriverWait wait = new WebDriverWait(driver, 30);
+	    wait.until(pageLoadCondition);
+	}
+  
   public void run(String base_url, String domain_url, Map<String, String> cookies, EngineCallback callback)
   {
     if (cookies != null) {
@@ -101,7 +115,11 @@ public class PhantomJS
     if (callback != null) {
       callback.before_get(this);
     }
+    
     this.client.get(base_url);
+    
+    waitForLoad(client);
+    
     if (callback != null) {
       callback.after_get(this);
     }
