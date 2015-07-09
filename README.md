@@ -20,7 +20,20 @@ System.out.println(me); // Print all data
 
 fb.end(); // Must finish the program
 ```
+You can also specify the username or ID of someone's page:
+``` Java
+FacebookClient fb = new FacebookClient(); // A new Firefox window will appear for you to login to your Facebook account
 
+User him = fb.get("lucas.example123", User.class); // Fetch lucas' data
+
+String hisName = him.getName(); // What's his name?
+
+System.out.println(him.getBirthday()); // And his birthday?
+
+System.out.println(him); // Print all data
+
+fb.end(); // Must finish the program
+```
 
 **- Friends**
 =======
@@ -36,6 +49,13 @@ System.out.println(first_friend.getFullName()+" lives in: " + first_friend.getLo
 fb.end(); // Finish it
 ```
 
+Grab any friend from any person:
+``` Java
+User someoneUnknown = fb.get("lucas.example123/friends/5, User.class); // Grab the 6th friend from lucas
+
+System.out.println("Name: " + someoneUnknown.getFullName());
+System.out.println("Lives in: " + someoneUnknown.getLocation());
+```
 You can also grab a friend of your friend!
 
 ``` Java
@@ -48,6 +68,9 @@ User friends_friend = fb.updateFriend(fb.get(first_friend.getUsername()+"/friend
 System.out.println(friends_friend.getFullName()+" lives in: " + friends_friend.getLocation());
     
 ```
+
+**Note:**
+The great advantage in this library is that every action you do on Facebook gets cached, which means next time you fetch lucas' 6th friend (or all his friends, or himself!) the library won't need to go to Facebook again anytime soon (until the cache expires obviously).
 
 **- Feeds**
 =======
