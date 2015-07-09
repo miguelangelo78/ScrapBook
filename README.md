@@ -51,7 +51,7 @@ System.out.println(friends_friend.getFullName()+" lives in: " + friends_friend.g
 
 **- Feeds**
 =======
-In order your own feed you need to write:
+In order to read your own feed you need to write the following:
 ``` Java
 // Grab most recent feeds:
 Elements feeds = fb.get("me/feed", Elements.class);
