@@ -11,6 +11,8 @@ public abstract interface FaceGlobal
   public static final String T_ME_ID_USR_LIVING = "{'location':'#current_city, #hometown'}";
   public static final String T_ME_ID_USR_RELATIONSHIP = "{'relations':'#pagelet_relationships > div'}";
   public static final String T_FRIENDS = "{'friends':'#collection_wrapper_2356318349 > div > ul > li'}";
+  public static final String T_FEEDS = "{'feeds': '._4-u2'}";
+  public static final String T_HOME_FEEDS = "{'home':'._5v3q'}";
   
   public static String S_FRIENDS = "friends";
   public static String S_PAGE = "page";

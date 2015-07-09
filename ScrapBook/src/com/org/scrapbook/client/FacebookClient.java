@@ -3,12 +3,16 @@ package com.org.scrapbook.client;
 import com.org.cache.JCache;
 import com.org.scrapbook.global.FaceGlobal;
 import com.org.scrapbook.object.User;
+import com.org.uniscraper.jsengine.EngineCallback;
+import com.org.uniscraper.jsengine.PhantomJS;
 import com.org.uniscraper.misc.Util;
 import com.org.uniscraper.scraper.WebScraper;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.openqa.selenium.JavascriptExecutor;
 
 public class FacebookClient implements FaceGlobal {
 	 private WebScraper facecraper;
@@ -53,12 +57,30 @@ public class FacebookClient implements FaceGlobal {
 					if(path_split.length==3){
 						try{
 							return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, Integer.parseInt(path_split[2]), 1).get(0);
-						}catch(Exception e){return null;}
+						}catch(Exception e){e.printStackTrace(); return null;}
 					}
 					else
 						return (T) User.constructFriends(facecraper, link_user + (is_ID?"&sk=friends":"/friends"), who_what, start, length);
-				case S_FEED: break;
-				case S_HOME: break;
+				case S_FEED:  
+					// Fetch all recent posts from a certain user:
+					return (T) facecraper.scrape(L_LOGIN, link_user, null, T_FEEDS).elems("feeds");
+				case S_HOME: {
+					facecraper.setProperty(WebScraper.Props.ENGINE_GET_CALLBACK, new EngineCallback() {
+						public void before_get(PhantomJS ctx) {}
+						public void after_get(PhantomJS ctx) {
+							ctx.waitForLoad(ctx.getClient());
+						
+							for(int i=0;i<10;i++){
+								((JavascriptExecutor) ctx.getClient()).executeScript("window.scrollTo(0, document.body.scrollHeight)");
+								try{
+									Thread.sleep(500);
+								}catch(Exception e){}
+							}
+						}
+					});
+					
+					return (T) facecraper.scrape(L_LOGIN, L_HOME, null, T_HOME_FEEDS).elems("home");
+				}
 				case S_PAGE: break;
 				case S_PUBLISH: break;
 				case S_SEARCH: break;
@@ -90,7 +112,6 @@ public class FacebookClient implements FaceGlobal {
 			myID = match.group(1);
 		
 		// If the username doesn't exist prepend : "profile.php?id="
-		System.out.println(myID);
 		JCache.put(JCache.cache_auth_name, "me", myID);
 	}
 	

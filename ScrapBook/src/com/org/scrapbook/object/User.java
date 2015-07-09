@@ -2,6 +2,8 @@ package com.org.scrapbook.object;
 
 import com.org.cache.JCache;
 import com.org.scrapbook.global.FaceGlobal;
+import com.org.uniscraper.jsengine.EngineCallback;
+import com.org.uniscraper.jsengine.PhantomJS;
 import com.org.uniscraper.misc.Util;
 import com.org.uniscraper.scraper.WebScraper;
 
@@ -11,6 +13,7 @@ import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.JavascriptExecutor;
 
 public class User implements FaceGlobal {
 	public boolean isPrivate() {
@@ -166,6 +169,7 @@ public class User implements FaceGlobal {
 	private String cacheUser = "facebook_object_user";
 	private static String cacheFriends = "facebook_list_friends";
 	private static String cacheUserPrefix ="usr_";
+	public static int global_start = 0; // Because the get callback is out of scope
 	
 	public void load_usr_from_cache(String key){
 		key+="_";
@@ -194,7 +198,7 @@ public class User implements FaceGlobal {
 	}
 	
 	private void cache_user(String cache_usr_name){
-		JCache.put(cacheUser, cache_usr_name, "alive");
+		JCache.put(cacheUser, cache_usr_name, "alive_and_updated");
 		cache_usr_name += "_";
 		JCache.put(cacheUser, cache_usr_name+"fullName", fullName);
 		JCache.put(cacheUser, cache_usr_name+"firstName", firstName);
@@ -215,12 +219,13 @@ public class User implements FaceGlobal {
 		
 		// Check if user lives in cache
 		String cache_usr_name = cacheUserPrefix+username;
-		if(JCache.isInCache(cacheUser, cache_usr_name)){
-			// If he is there AND updated, load his data instead of scraping from facebook
-			load_usr_from_cache(cache_usr_name);
-			return;
-		}
-		
+		if(JCache.isInCache(cacheUser, cache_usr_name))
+			if(((String)JCache.get(cacheUser, cache_usr_name)).equals("alive_and_updated")){
+				// If he is there AND updated, load his data instead of scraping from facebook
+				load_usr_from_cache(cache_usr_name);
+				return;
+			}
+	
 		// He's not there/he's just been id'd, fetch the data from face
 		scraper.scrape(L_LOGIN, user_page_url, null, T_ME_ID_USR);
 		
@@ -331,7 +336,7 @@ public class User implements FaceGlobal {
 	}
 	
 	public static void cache_friendlist(String cache_usr_name, ArrayList<User> friends, int start, int end){
-		JCache.put(cacheFriends, cache_usr_name, "alive");
+		JCache.put(cacheFriends, cache_usr_name, "alive_and_identified");
 		
 		for(int i=start,fr_ctr = 0;i<end;i++,fr_ctr++){
 			JCache.put(cacheFriends, cache_usr_name+"_friend_"+i+"_fullName", friends.get(fr_ctr).getFullName());
@@ -365,10 +370,41 @@ public class User implements FaceGlobal {
 		// He's not in the cache, scrape his friend list:
 		friends = new ArrayList<User>();
 		
-		// put a get callback here:
+		/*// put a get callback here:
+		if(start>MAX_FRIENDS)
+		{
+			global_start = start;
+			scraper.setProperty(WebScraper.Props.ENGINE_GET_CALLBACK, new EngineCallback() {
+				public void after_get(PhantomJS ctx) {
+					ctx.waitForLoad(ctx.getClient());
+					int start = (User.global_start - MAX_FRIENDS); // Grab the start variable from the class out of scope
+					int base = 2000;
+					
+					int scrollTo = base + (5000);
+					System.out.println("Start: "+start+" Scrollto: "+scrollTo);
+					
+					for(int i=0;i<start;i++){
+						((JavascriptExecutor)ctx.getClient()).executeScript("scrollBy(0, "+scrollTo+")");
+						   
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					ctx.waitForLoad(ctx.getClient());
+					ctx.take_screenshot("C:\\Users\\Miguel\\Desktop\\screen.jpg", true);
+				}
+	
+				public void before_get(PhantomJS ctx) {}
+				
+			});
+		}*/
+		
 		scraper.scrape(L_LOGIN, user_page_url, null, T_FRIENDS); // Use the start variable here to affect what it is scraping
 		
 		int how_manyfriends_found = scraper.count("friends");
+		System.out.println("FOUND: "+how_manyfriends_found);
 		if(start >= how_manyfriends_found && how_manyfriends_found>0){
 			start = how_manyfriends_found-1;
 			limit=start+1;

@@ -37,4 +37,8 @@ public class JCache {
 	  	cacheman = CacheManager.getInstance();
 	  }
 	  
+	  public static void clearCache(String cacheName){
+		  cacheman.getCache(cacheName).removeAll();
+	  }
+	  
 }

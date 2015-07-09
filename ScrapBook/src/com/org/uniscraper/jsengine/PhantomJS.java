@@ -96,7 +96,7 @@ public class PhantomJS
     setProperties();
   }
   
-  void waitForLoad(WebDriver driver) {
+  public void waitForLoad(WebDriver driver) {
 	    ExpectedCondition<Boolean> pageLoadCondition = new
 	        ExpectedCondition<Boolean>() {
 	            public Boolean apply(WebDriver driver) {
@@ -118,11 +118,11 @@ public class PhantomJS
     
     this.client.get(base_url);
     
-    waitForLoad(client);
-    
     if (callback != null) {
       callback.after_get(this);
     }
+
+    waitForLoad(client);
   }
   
   public byte[] take_screenshot(String screensht_filepath, boolean as_file)

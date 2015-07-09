@@ -6,8 +6,10 @@ import com.org.uniscraper.jsengine.EngineCallback;
 import com.org.uniscraper.jsengine.PhantomJS;
 import com.org.uniscraper.jsoniterator.JSONIterator;
 import com.org.uniscraper.misc.Util;
+
 import java.io.IOException;
 import java.util.Map;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -168,66 +170,41 @@ public class WebScraper
     engine_auth_callback = callback;
   }
   
-  public void setProperty(Props property, Object value)
-  {
-    switch (property)
-    {
-    case ENGINE_AUTH_CALLBACK: 
-      this.timeout = ((Integer)value).intValue(); break;
-    case ENGINE_GET_CALLBACK: 
-      if ((value instanceof String[])) {
-        this.conn.cookie(((String[])value)[0], ((String[])value)[1]);
-      } else {
-        this.conn.cookies((Map)value);
-      }
-      break;
-    case HEADER: 
-      this.conn.header(((String[])value)[0], ((String[])value)[1]); break;
-    case IGNRCONTTYPE: 
-      this.conn.data((Map)value); break;
-    case COOKIE: 
-      this.USER_AGENT = ((String)value); break;
-    case MANUAL_AUTH: 
-      this.conn.referrer((String)value); break;
-    case METHOD: 
-      this.is_method_set = true;this.conn.method((Connection.Method)value); break;
-    case PARAMS: 
-      this.conn.ignoreContentType(((Boolean)value).booleanValue()); break;
-    case REFERRER: 
-      is_using_headless = ((Boolean)value).booleanValue(); break;
-    case TIMEOUT: 
-      engine_get_callback = (EngineCallback)value; break;
-    case USER_AGENT: 
-      engine_auth_callback = (EngineAuthCallback)value; break;
-    case USING_HEADLESS: 
-      manual_auth = ((Boolean)value).booleanValue(); break;
-    case PROXY: 
-      String[] keyvals = Util.jsonStringToArray((String)value);
-      System.setProperty("http.proxyHost", keyvals[0]);
-      System.setProperty("http.proxyPort", keyvals[1]);
-      break;
-    }
-  }
-  
-  public Object getProperty(Props property, String value)
-  {
-    switch (property)
-    {
-    case ENGINE_AUTH_CALLBACK: 
-      return Integer.valueOf(this.timeout);
-    case ENGINE_GET_CALLBACK: 
-      return this.conn.response().cookies();
-    case HEADER: 
-      return this.conn.response().header(value);
-    case COOKIE: 
-      return this.USER_AGENT;
-    case METHOD: 
-      return this.conn.response().method();
-    case REFERRER: 
-      return Boolean.valueOf(is_using_headless);
-    }
-    return null;
-  }
+	@SuppressWarnings("unchecked")
+	public void setProperty(Props property, Object value){
+		switch(property){
+			case TIMEOUT: timeout = (int) value; break;
+			case COOKIE: if(value instanceof String[]) conn.cookie(((String[])(value))[0], ((String[])(value))[1]); else conn.cookies((Map<String, String>) value); break;
+			case HEADER: conn.header(((String[])(value))[0], ((String[])(value))[1]); break;
+			case PARAMS: conn.data((Map<String, String>)value); break;
+			case USER_AGENT: this.USER_AGENT = (String) value; break;
+			case REFERRER: conn.referrer((String) value); break;
+			case METHOD: is_method_set = true; conn.method((org.jsoup.Connection.Method) value); break;
+			case IGNRCONTTYPE: conn.ignoreContentType((boolean) value); break;
+			case USING_HEADLESS: is_using_headless = (boolean) value; break;
+			case ENGINE_GET_CALLBACK: engine_get_callback = (EngineCallback) value; break;
+			case ENGINE_AUTH_CALLBACK: engine_auth_callback = (EngineAuthCallback) value; break;
+			case MANUAL_AUTH: manual_auth = (boolean) value; break;
+			case PROXY: 
+				String [] keyvals = Util.jsonStringToArray((String) value);
+				System.setProperty("http.proxyHost", keyvals[0]); // Set Proxy Host
+				System.setProperty("http.proxyPort", keyvals[1]); // Set Proxy Port
+				break;
+			default: break;
+		}
+	}
+	
+	public Object getProperty(Props property, String value){
+		switch(property){
+			case TIMEOUT: return timeout;
+			case COOKIE: return conn.response().cookies();
+			case HEADER: return conn.response().header(value);
+			case USER_AGENT: return this.USER_AGENT;
+			case METHOD: return conn.response().method();
+			case USING_HEADLESS: return is_using_headless;
+			default: return null;
+		}
+	}
   
   public Connection.Response getResponse()
   {

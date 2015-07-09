@@ -1,5 +1,7 @@
 package com.org.app;
 
+import org.jsoup.select.Elements;
+
 import com.org.cache.JCache;
 import com.org.scrapbook.client.FacebookClient;
 import com.org.scrapbook.object.User;
@@ -16,27 +18,23 @@ public class app {
 	}
 	
 	public static void main(String[] args) {
+		
 		FacebookClient fb = new FacebookClient();
 		
 		try{
-			int path [] = new int[]{7,1,0,29,1,5,0,9,18};
-			
 			cron(); 
 			/////
 			
-			User friends_friend = fb.get("me/friends/"+path[0], User.class);
+			Elements feeds = fb.get("me/home", Elements.class);
 			
-			for(int i=1;i<path.length;i++)
-				friends_friend = fb.get(friends_friend.getUsername()+"/friends/"+Integer.toString(path[i]), User.class);
-				
-			friends_friend = fb.updateFriend(friends_friend);
+			System.out.println(feeds.size());
+			System.out.print(feeds.get(0).text());
 			
 			/////
 			float elapsedTime = cron()*1.0f/1000; 
 		    
-			System.out.println("! "+String.format("%s", elapsedTime)+ " seconds , "+String.format("%s", elapsedTime/path.length*1.0f)+"s per friend!");
-			System.out.println(friends_friend);
-		
+			System.out.println("! "+String.format("%s", elapsedTime)+ " seconds !");
+			
 		}catch(Exception e){e.printStackTrace(); JCache.cacheman.shutdown();}
 		finally{
 			fb.end();
