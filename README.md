@@ -12,9 +12,9 @@ FacebookClient fb = new FacebookClient(); // A new Firefox window will appear fo
 
 User me = fb.get("me", User.class); // Fetch my own user data
 
-String myName = me.getName();
+String myName = me.getName(); // What's my name?
 
-System.out.println(me.getBirthday());
+System.out.println(me.getBirthday()); // And my birthday?
 
 System.out.println(me); // Print all data
 
